@@ -1,57 +1,82 @@
-set nocompatible
+set nocompatible " magic
 
 " General {{{
-set backspace=start,indent,eol
-set encoding=utf-8
-set noswapfile
-set nowrap
-set number
+set backspace=start,indent,eol " backspace over everything in insert mode
+set encoding=utf-8 " represent characters internally as utf-8
+set expandtab " use spaces instead of tabs
+set laststatus=2 " always show the status line
+set noswapfile " turn backup off
+set nowrap " don't wrap lines visually
+set number " show file line numbers
+set ruler " show current line and column positions in file
+set shiftwidth=4 " shift line by 4 spaces when using >> or <<
+set showmatch " show matching open/close for bracket
+set showmode " show what mode you are in
+set showcmd " show what commands you are typing
+set tabstop=4 " tab is 4 spaces
+set wildmenu " turn on the wild menu
 " }}}
 
 " UI {{{
-set background=dark
-set cursorline
-set mousehide
+set background=dark " easier on the eyes
+set cursorline " highlights the current line
+set mouse=a " enable mouse stuff
 " }}}
 
 " Search {{{
-set ignorecase
-set smartcase
-set infercase
-set hlsearch
-set incsearch
-set nowrapscan
+set ignorecase " ignore case when searching
+set smartcase " ...unless it looks like you are trying to search with case
+set hlsearch " highlight search results
+set incsearch " highlight search results as you type
+set nowrapscan " do not wrap around to beginning when searching
 " }}}
 
 " Syntax, Filetype {{{
-syntax on
-filetype on
-filetype indent on
-filetype plugin on
-syntax sync fromstart
+syntax enable " enable syntax highlighting
+filetype on " enable filetype detection
+filetype indent on " enable filetype-specific indentation
+filetype plugin on " enable filetype-specific plugins
+syntax sync fromstart " syntax highlight from start of file--slow but accurate
 " }}}
 
 " Plugins {{{
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-Plugin 'VundleVim/Vundle.vim'
-Plugin 'morhetz/gruvbox'
-Plugin 'scrooloose/syntastic'
-Plugin 'hdima/python-sytax'
-Plugin 'ervandew/supertab'
-Plugin 'hynek/vim-python-pep8-indent'
-Plugin 'jonathanfilip/vim-lucius'
-Plugin 'kien/ctrlp.vim'
-Plugin 'bling/vim-airline'
+call plug#begin('~/.vim/plugged')
+Plug 'bling/vim-airline' " better statusline
+Plug 'ervandew/supertab' " tab completion
+Plug 'hdima/python-syntax' " syntax highlighting
+Plug 'hynek/vim-python-pep8-indent' " modifies indentation behavior to comply with pep8
+Plug 'jonathanfilip/vim-lucius' " another excellent colorscheme
+Plug 'kien/ctrlp.vim' " fuzzy file finder
+Plug 'morhetz/gruvbox' " excellent colorscheme
+Plug 'scrooloose/syntastic' " syntax checking
 " }}}
 
 " Colors {{{
-colorscheme gruvbox
+set t_Co=256 " hope terminal supports 256 colors
+colorscheme gruvbox " makes things look good
+" }}}
+
+" Vim Airline {{{
+let g:airline#extensions#tabline#enabled=1 " display all buffers when there's only one tab open
+" }}}
+
+" Syntastic {{{
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+" }}}
+
+" Python Syntax {{{
+let python_highlight_all=1 " enable all Python syntax highlighting features
 " }}}
 
 " Ctrl-P {{{
 let g:ctrlp_clear_cache_on_exit=1
-let g:ctrlp_show_hidden=0
+let g:ctrlp_show_hidden=1 " show hidden files
 let g:ctrlp_switch_buffer=1
 let g:ctrlp_match_window='max:10,results:100'
 let g:ctrlp_use_caching=1
