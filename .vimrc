@@ -5,6 +5,7 @@ set backspace=start,indent,eol " backspace over everything in insert mode
 set encoding=utf-8 " represent characters internally as utf-8
 set expandtab " use spaces instead of tabs
 set laststatus=2 " always show the status line
+set noerrorbells " disable error bells
 set noswapfile " turn backup off
 set nowrap " don't wrap lines visually
 set number " show file line numbers
@@ -13,6 +14,7 @@ set shiftwidth=4 " shift line by 4 spaces when using >> or <<
 set showmatch " show matching open/close for bracket
 set showmode " show what mode you are in
 set showcmd " show what commands you are typing
+set t_vb= " disable screen flash
 set tabstop=4 " tab is 4 spaces
 set wildmenu " turn on the wild menu
 " }}}
@@ -21,6 +23,8 @@ set wildmenu " turn on the wild menu
 set background=dark " easier on the eyes
 set cursorline " highlights the current line
 set mouse=a " enable mouse stuff
+set colorcolumn=100 " display ruler at 100 lines
+highlight ColorColumn ctermbg=0
 " }}}
 
 " Search {{{
@@ -33,10 +37,10 @@ set nowrapscan " do not wrap around to beginning when searching
 
 " Syntax, Filetype {{{
 syntax enable " enable syntax highlighting
+syntax sync fromstart " syntax highlight from start of file--slow but accurate
 filetype on " enable filetype detection
 filetype indent on " enable filetype-specific indentation
 filetype plugin on " enable filetype-specific plugins
-syntax sync fromstart " syntax highlight from start of file--slow but accurate
 " }}}
 
 " Plugins {{{
@@ -45,7 +49,6 @@ Plug 'bling/vim-airline' " better statusline
 Plug 'ervandew/supertab' " tab completion
 Plug 'hdima/python-syntax' " syntax highlighting
 Plug 'hynek/vim-python-pep8-indent' " modifies indentation behavior to comply with pep8
-Plug 'jonathanfilip/vim-lucius' " another excellent colorscheme
 Plug 'kien/ctrlp.vim' " fuzzy file finder
 Plug 'morhetz/gruvbox' " excellent colorscheme
 Plug 'scrooloose/syntastic' " syntax checking
@@ -61,13 +64,11 @@ let g:airline#extensions#tabline#enabled=1 " display all buffers when there's on
 " }}}
 
 " Syntastic {{{
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+let g:syntastic_always_populate_loc_list=1
+let g:syntastic_auto_loc_list=1
+let g:syntastic_check_on_open=1
+let g:syntastic_check_on_wq=0
+let g:systastic_mode_map={'passive_filetypes': ['python']} " avoid syntax check clashes
 " }}}
 
 " Python Syntax {{{
