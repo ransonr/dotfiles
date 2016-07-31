@@ -1,10 +1,15 @@
 set nocompatible " magic
 
 " General {{{
+set background=dark " easier on the eyes
 set backspace=start,indent,eol " backspace over everything in insert mode
+set colorcolumn=100 " display ruler at 100 lines
+set cursorline " highlights the current line
 set encoding=utf-8 " represent characters internally as utf-8
 set expandtab " use spaces instead of tabs
 set laststatus=2 " always show the status line
+set mouse=a " enable mouse stuff
+set mousehide " hide mouse when typing
 set noerrorbells " disable error bells
 set noswapfile " turn backup off
 set nowrap " don't wrap lines visually
@@ -17,14 +22,6 @@ set showcmd " show what commands you are typing
 set t_vb= " disable screen flash
 set tabstop=4 " tab is 4 spaces
 set wildmenu " turn on the wild menu
-" }}}
-
-" UI {{{
-set background=dark " easier on the eyes
-set cursorline " highlights the current line
-set mouse=a " enable mouse stuff
-set colorcolumn=100 " display ruler at 100 lines
-highlight ColorColumn ctermbg=0
 " }}}
 
 " Search {{{
@@ -61,6 +58,7 @@ colorscheme gruvbox " makes things look good
 
 " Vim Airline {{{
 let g:airline#extensions#tabline#enabled=1 " display all buffers when there's only one tab open
+let g:airline#extensions#whitespace#enabled=1
 " }}}
 
 " Syntastic {{{
@@ -85,3 +83,5 @@ let g:ctrlp_root_markers=['cscope.out', 'tags']
 let g:ctrlp_extensions=['buffertag']
 let g:ctrlp_by_filename=1
 " }}}
+
+nmap <Space> <leader>
