@@ -46,25 +46,29 @@ filetype plugin on " enable filetype-specific plugins
 
 " Plugins {{{
 call plug#begin('~/.vim/plugged')
-Plug 'bling/vim-airline' " better statusline
+Plug 'airblade/vim-gitgutter' " useful git info
+Plug 'vim-airline/vim-airline' " better statusline
+Plug 'vim-airline/vim-airline-themes' " themes for statusline
 Plug 'ervandew/supertab' " tab completion
 Plug 'hdima/python-syntax' " syntax highlighting
 Plug 'hynek/vim-python-pep8-indent' " modifies indentation behavior to comply with pep8
+Plug 'JuliaEditorSupport/julia-vim' " Julia syntax stuff
 Plug 'kien/ctrlp.vim' " fuzzy file finder
 Plug 'morhetz/gruvbox' " excellent colorscheme
 Plug 'pangloss/vim-javascript' " improved Javascript indentation/syntax
 Plug 'scrooloose/syntastic' " syntax checking
+call plug#end()
 " }}}
 
 " Colors {{{
 set t_Co=256 " hope terminal supports 256 colors
-colorscheme gruvbox " makes things look good
+colorscheme gruvbox " makes vim pretty
 " }}}
 
 " Vim Airline {{{
-let g:airline_theme='powerlineish'
 let g:airline#extensions#tabline#enabled=1 " display all buffers when there's only one tab open
-let g:airline#extensions#whitespace#enabled=1
+let g:airline_left_sep='' " don't require fancy powerline fonts
+let g:airline_right_sep='' " don't require fancy powerline fonts
 " }}}
 
 " Syntastic {{{
@@ -92,6 +96,20 @@ let g:ctrlp_by_filename=1
 
 " Mappings {{{
 nmap <Space> <leader>
+
+" Move between buffers easily
+nnoremap <leader>l :bnext<CR>
+nnoremap <leader>h :bprevious<CR>
+
+" Move around splits easily
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+" Expand and contract folds
+nnoremap - zm
+nnoremap + zr
 
 " Easily open this file in a split
 nnoremap <leader>ev :split $MYVIMRC<CR>
