@@ -13,17 +13,17 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
+Plug 'JuliaEditorSupport/julia-vim' " Julia syntax stuff
 Plug 'airblade/vim-gitgutter' " useful git info
-Plug 'vim-airline/vim-airline' " better statusline
-Plug 'vim-airline/vim-airline-themes' " you can figure this one out
 Plug 'ervandew/supertab' " tab completion
 Plug 'hdima/python-syntax' " better Python syntax highlighting
 Plug 'hynek/vim-python-pep8-indent' " modifies indentation behavior to comply with pep8
-Plug 'JuliaEditorSupport/julia-vim' " Julia syntax stuff
 Plug 'kien/ctrlp.vim' " fuzzy file finder
 Plug 'morhetz/gruvbox' " excellent colorscheme
 Plug 'pangloss/vim-javascript' " improved Javascript indentation/syntax
 Plug 'scrooloose/syntastic' " syntax checking
+Plug 'vim-airline/vim-airline' " better statusline
+Plug 'vim-airline/vim-airline-themes' " you can figure this one out
 call plug#end()
 
 " vim-airline settings
@@ -82,6 +82,9 @@ set t_vb= " disable screen flash
 set tabstop=2 " tab is 2 spaces
 set timeoutlen=500 " reduce lag for mapped sequences
 set wildmenu " enhanced command-line completion
+
+set list
+set listchars=tab:!.,trail:.
 " }}}
 
 
@@ -106,11 +109,11 @@ endif
 
 
 " Syntax, Filetype {{{
-syntax enable " enable syntax highlighting
-syntax sync fromstart " syntax highlight from start of file--slow but accurate
 filetype on " enable filetype detection
 filetype indent on " enable filetype-specific indentation
 filetype plugin on " enable filetype-specific plugins
+syntax enable " enable syntax highlighting
+syntax sync fromstart " syntax highlight from start of file--slow but accurate
 " }}}
 
 
