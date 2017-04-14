@@ -4,10 +4,10 @@ set nocompatible " vim > vi
 
 " Plugins {{{
 
-" Install vim-plug automatically if not found
+" Install vim-plug automatically if not found (assumes $MYVIMRC is defined)
 " From: https://github.com/junegunn/vim-plug/wiki/faq#automatic-installation
 if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs --insecure
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall | source $MYVIMRC
 endif
@@ -82,9 +82,6 @@ set t_vb= " disable screen flash
 set tabstop=2 " tab is 2 spaces
 set timeoutlen=500 " reduce lag for mapped sequences
 set wildmenu " enhanced command-line completion
-
-set list
-set listchars=tab:!.,trail:.
 " }}}
 
 
@@ -118,10 +115,6 @@ syntax sync fromstart " syntax highlight from start of file--slow but accurate
 
 
 " Colors {{{
-if !has('gui_running')
-  set t_Co=256 " hope terminal supports 256 colors
-endif
-
 colorscheme gruvbox " makes vim pretty
 " }}}
 
