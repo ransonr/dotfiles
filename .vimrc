@@ -1,37 +1,37 @@
 " vim:foldmethod=marker
-set nocompatible " vim > vi
-
+set nocompatible
 
 " Plugins {{{
 
 " Install vim-plug automatically if not found (assumes $MYVIMRC is defined)
 " From: https://github.com/junegunn/vim-plug/wiki/faq#automatic-installation
 if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs --insecure
+  silent !curl -fLo ~/.vim/autoload/plug.vim
+    \ --create-dirs
+    \ --insecure
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall | source $MYVIMRC
 endif
 
 call plug#begin('~/.vim/plugged')
-Plug 'JuliaEditorSupport/julia-vim' " Julia syntax stuff
 Plug 'airblade/vim-gitgutter' " useful git info
 Plug 'ervandew/supertab' " tab completion
-Plug 'hdima/python-syntax' " better Python syntax highlighting
-Plug 'hynek/vim-python-pep8-indent' " modifies indentation behavior to comply with pep8
+Plug 'hdima/python-syntax', { 'for': 'python' } " better Python syntax highlighting
+Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation behavior to comply with pep8
 Plug 'kien/ctrlp.vim' " fuzzy file finder
 Plug 'morhetz/gruvbox' " excellent colorscheme
-Plug 'pangloss/vim-javascript' " improved Javascript indentation/syntax
-Plug 'scrooloose/syntastic' " syntax checking
+Plug 'tpope/vim-commentary' " comment stuff out
 Plug 'vim-airline/vim-airline' " better statusline
 Plug 'vim-airline/vim-airline-themes' " you can figure this one out
+Plug 'vim-syntastic/syntastic' " syntax checking
 call plug#end()
 
 " vim-airline settings
 let g:airline#extensions#syntastic#enabled=1 " warn me about bad syntax
 let g:airline#extensions#tabline#enabled=1 " display all buffers when there's only one tab open
 let g:airline#extensions#tabline#fnamemod=':t' " just show buffer filename
-let g:airline_left_sep='' " don't require fancy powerline fonts
-let g:airline_right_sep='' " don't require fancy powerline fonts
+let g:airline_powerline_fonts=1
+let g:airline_skip_empty_sections=1
 
 " syntastic settings
 let g:syntastic_python_checkers=['pyflakes', 'pep8'] " run both checkers to be safe
@@ -63,7 +63,10 @@ set colorcolumn=100 " display ruler at 100 lines
 set cursorline " highlights the current line
 set encoding=utf-8 " represent characters internally as utf-8
 set expandtab " use spaces instead of tabs
+set foldlevelstart=99 " open all folds by default
+set hidden " switch between buffers without saving
 set laststatus=2 " always show the status line
+set lazyredraw " redraw the screen only when needed
 set mouse=a " enable mouse stuff
 set mousehide " hide mouse when typing
 set noerrorbells " disable error bells
@@ -81,6 +84,7 @@ set splitright " put new window to the right when splitting vertically
 set t_vb= " disable screen flash
 set tabstop=2 " tab is 2 spaces
 set timeoutlen=500 " reduce lag for mapped sequences
+set ttymouse=xterm2 " better mouse handling
 set wildmenu " enhanced command-line completion
 " }}}
 
