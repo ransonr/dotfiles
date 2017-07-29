@@ -13,6 +13,7 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
+Plug 'JuliaEditorSupport/julia-vim' " julia syntax support
 Plug 'airblade/vim-gitgutter' " useful git info
 Plug 'ervandew/supertab' " tab completion
 Plug 'hdima/python-syntax', { 'for': 'python' } " better Python syntax highlighting
@@ -27,6 +28,7 @@ Plug 'tpope/vim-fugitive' " git stuff
 Plug 'vim-airline/vim-airline' " better statusline
 Plug 'vim-airline/vim-airline-themes' " you got this
 Plug 'w0rp/ale' " async linter
+Plug 'tell-k/vim-autopep8', { 'for': 'python' } " clean up ugly code
 call plug#end()
 
 " }}}
@@ -46,7 +48,7 @@ let g:ale_echo_msg_error_str='E'
 let g:ale_echo_msg_warning_str='W'
 let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
 let g:ale_history_enabled=0 " don't keep history of commands
-let g:ale_lint_delay=1000 " delay (ms) after text is changed for linters to run (default 200)
+let g:ale_lint_delay=500 " delay (ms) after text is changed for linters to run (default 200)
 let g:ale_set_highlights=0 " don't highlight errors, just show in gutter
 let g:ale_sign_column_always=1 " don't want text to move when I start editing a file
 let g:ale_python_flake8_options='--max-line-length=99'
@@ -74,6 +76,9 @@ let g:gitgutter_eager=0 " only run on save or when new buffer is loaded
 
 " gruvbox
 let g:gruvbox_contrast_dark='soft'
+
+" vim-markdown
+let g:vim_markdown_frontmatter=1
 
 " }}}
 
@@ -151,10 +156,10 @@ endif
 
 " FileType Settings {{{
 
-autocmd FileType html setlocal wrap
+autocmd FileType html,tex setlocal wrap
 
-autocmd FileType python setlocal shiftwidth=4 " shift line by 4 spaces when using >> or <<
-autocmd FileType python setlocal tabstop=4 " tab is 4 spaces
+autocmd FileType julia,python setlocal shiftwidth=4 " shift line by 4 spaces when using >> or <<
+autocmd FileType julia,python setlocal tabstop=4 " tab is 4 spaces
 
 " }}}
 
