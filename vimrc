@@ -39,7 +39,6 @@ call plug#end()
 let g:airline_extensions=['ale', 'branch', 'ctrlp', 'hunks', 'tabline']
 let g:airline#extensions#tabline#fnamemod=':t' " just show buffer filename
 let g:airline_powerline_fonts=1
-let g:airline_skip_empty_sections=1
 let g:airline_left_sep=''
 let g:airline_right_sep=''
 
@@ -141,7 +140,7 @@ set nowrapscan " do not wrap around to beginning when searching
 
 " Colors
 set t_Co=256
-colorscheme gruvbox " makes vim pretty
+colorscheme gruvbox
 
 " Clipboard
 if has('clipboard')
@@ -151,6 +150,9 @@ if has('clipboard')
     set clipboard=unnamed
   endif
 endif
+
+set guicursor=n-v-c:block-Cursor
+set guicursor+=a:blinkon0
 
 " }}}
 
@@ -200,5 +202,10 @@ inoremap jk <ESC>
 
 " Remove trailing whitespace
 nnoremap <leader>rtw :%s/\s\+$//e<CR>
+
+" Show syntax items under cursor
+map <F10> :echo "hi<" . synIDattr(synID(line("."), col("."),1), "name") . "> trans<"
+      \ . synIDattr(synID(line("."), col("."),0), "name") . "> lo<"
+      \ . synIDattr(synIDtrans(synID(line("."), col("."), 1)), "name") . ">"<CR>
 
 " }}}
