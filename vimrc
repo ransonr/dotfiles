@@ -14,6 +14,7 @@ endif
 
 call plug#begin('~/.vim/plugged')
 Plug 'JuliaEditorSupport/julia-vim' " julia syntax support
+Plug 'Rykka/colorv.vim' " color tool
 Plug 'airblade/vim-gitgutter' " useful git info
 Plug 'ervandew/supertab' " tab completion
 Plug 'hdima/python-syntax', { 'for': 'python' } " better Python syntax highlighting
@@ -22,13 +23,13 @@ Plug 'kien/ctrlp.vim' " fuzzy file finder
 Plug 'morhetz/gruvbox' " excellent colorscheme
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' } " better javascript support
 Plug 'plasticboy/vim-markdown', { 'for': 'markdown' } " better markdown support
+Plug 'tell-k/vim-autopep8', { 'for': 'python' } " clean up ugly code
 Plug 'tmhedberg/SimpylFold', { 'for': 'python' } " better folding for Python
 Plug 'tpope/vim-commentary' " comment stuff out
 Plug 'tpope/vim-fugitive' " git stuff
 Plug 'vim-airline/vim-airline' " better statusline
 Plug 'vim-airline/vim-airline-themes' " you got this
 Plug 'w0rp/ale' " async linter
-Plug 'tell-k/vim-autopep8', { 'for': 'python' } " clean up ugly code
 call plug#end()
 
 " }}}
@@ -181,11 +182,6 @@ nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
-
-" Toggle folds
-nnoremap - zA
-noremap <leader><Up> zR
-noremap <leader><Down> zM
 
 " Move between ale errors quickly
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
