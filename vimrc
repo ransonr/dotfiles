@@ -53,8 +53,13 @@ let g:ale_set_highlights=0 " don't highlight errors, just show in gutter
 let g:ale_sign_column_always=1 " don't want text to move when I start editing a file
 let g:ale_python_flake8_options='--max-line-length=99'
 let g:ale_linters={
-  \ 'javascript': ['eslint'],
+  \ 'javascript': ['eslint', 'prettier'],
   \ 'python': ['flake8'],
+  \ 'html': ['tidy'],
+  \ }
+let g:ale_fixers={
+  \ 'javascript': ['eslint', 'prettier'],
+  \ 'python': ['autopep8'],
   \ }
 
 " python-syntax
