@@ -16,10 +16,10 @@ call plug#begin('~/.vim/plugged')
 Plug 'JuliaEditorSupport/julia-vim' " julia syntax support
 Plug 'Rykka/colorv.vim' " color tool
 Plug 'airblade/vim-gitgutter' " useful git info
-Plug 'ervandew/supertab' " tab completion
 Plug 'hdima/python-syntax', { 'for': 'python' } " better Python syntax highlighting
 Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation behavior to comply with pep8
 Plug 'kien/ctrlp.vim' " fuzzy file finder
+Plug 'maralla/completor.vim' " tab completion
 Plug 'morhetz/gruvbox' " excellent colorscheme
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' } " better javascript support
 Plug 'ransonr/vim-lucius' " fork of Jon's colorscheme
