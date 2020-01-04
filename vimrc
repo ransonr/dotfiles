@@ -19,7 +19,6 @@ Plug 'airblade/vim-gitgutter' " useful git info
 Plug 'hdima/python-syntax', { 'for': 'python' } " better Python syntax highlighting
 Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation behavior to comply with pep8
 Plug 'kien/ctrlp.vim' " fuzzy file finder
-Plug 'maralla/completor.vim' " tab completion
 Plug 'morhetz/gruvbox' " excellent colorscheme
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' } " better javascript support
 Plug 'ransonr/vim-lucius' " fork of Jon's colorscheme
@@ -113,7 +112,7 @@ set guicursor+=a:blinkon0
 
 " FileType Settings {{{
 
-autocmd FileType html,tex setlocal wrap
+autocmd FileType html,tex,markdown setlocal wrap
 
 autocmd FileType julia,python setlocal shiftwidth=4 " shift line by 4 spaces when using >> or <<
 autocmd FileType julia,python setlocal tabstop=4 " tab is 4 spaces
