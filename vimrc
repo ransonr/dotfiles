@@ -3,22 +3,20 @@
 " Plugins {{{
 
 " Install vim-plug automatically if not found (assumes $MYVIMRC is defined)
-" From: https://github.com/junegunn/vim-plug/wiki/faq#automatic-installation
+" From: https://github.com/junegunn/vim-plug/wiki/tips#automatic-installation
 if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim
-    \ --create-dirs
-    \ --insecure
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall | source $MYVIMRC
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+      \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 call plug#begin('~/.vim/plugged')
 Plug 'JuliaEditorSupport/julia-vim' " julia syntax support
-Plug 'Rykka/colorv.vim' " color tool
 Plug 'airblade/vim-gitgutter' " useful git info
 Plug 'hdima/python-syntax', { 'for': 'python' } " better Python syntax highlighting
 Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation behavior to comply with pep8
-Plug 'kien/ctrlp.vim' " fuzzy file finder
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy file finder
+Plug 'junegunn/fzf.vim' " handy mappings for fzf
 Plug 'morhetz/gruvbox' " excellent colorscheme
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' } " better javascript support
 Plug 'ransonr/vim-lucius' " fork of Jon's colorscheme
@@ -122,11 +120,11 @@ autocmd FileType julia,python setlocal tabstop=4 " tab is 4 spaces
 " Plugin Settings {{{
 
 " vim-airline
-let g:airline_extensions=['ale', 'branch', 'ctrlp', 'hunks', 'tabline']
+let g:airline_extensions=['ale', 'branch', 'fzf', 'hunks', 'tabline']
 let g:airline#extensions#tabline#fnamemod=':t' " just show buffer filename
 let g:airline_powerline_fonts=1
-let g:airline_left_sep=''
-let g:airline_right_sep=''
+" let g:airline_left_sep=''
+" let g:airline_right_sep=''
 
 " ale
 let g:ale_echo_msg_error_str='E'
@@ -149,17 +147,6 @@ let g:ale_fixers={
 
 " python-syntax
 let python_highlight_all=1 " enable all Python syntax highlighting features
-
-" ctrlp
-let g:ctrlp_show_hidden=1 " show hidden files
-let g:ctrlp_switch_buffer=1 " jump to open buffer if already opened
-let g:ctrlp_match_window='max:10,results:100' " limit window height and number of results
-let g:ctrlp_use_caching=0 " fast enough
-let g:ctrlp_by_filename=1 " search by filename instead of full path
-
-if executable('ag')
-  let g:ctrlp_user_command='ag %s -l --nocolor -g ""' " faster listing of files in ctrlp
-endif
 
 " gitgutter
 let g:gitgutter_eager=0 " only run on save or when new buffer is loaded
@@ -201,6 +188,10 @@ inoremap jk <ESC>
 
 " Remove trailing whitespace
 nnoremap <leader>rtw :%s/\s\+$//e<CR>
+
+" fzf.vim shortcuts
+nnoremap <silent> <C-p> :GFiles<CR>
+nnoremap <silent> <leader>f :Ag<CR>
 
 " Show syntax items under cursor
 map <F10> :echo "hi<" . synIDattr(synID(line("."), col("."),1), "name") . "> trans<"
