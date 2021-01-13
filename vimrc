@@ -17,10 +17,7 @@ Plug 'hdima/python-syntax', { 'for': 'python' } " better Python syntax highlight
 Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation behavior to comply with pep8
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy file finder
 Plug 'junegunn/fzf.vim' " handy mappings for fzf
-Plug 'morhetz/gruvbox' " excellent colorscheme
-Plug 'pangloss/vim-javascript', { 'for': 'javascript' } " better javascript support
 Plug 'ransonr/vim-lucius' " fork of Jon's colorscheme
-Plug 'tell-k/vim-autopep8', { 'for': 'python' } " clean up ugly code
 Plug 'tmhedberg/SimpylFold', { 'for': 'python' } " better folding for Python
 Plug 'tpope/vim-commentary' " comment stuff out
 Plug 'tpope/vim-fugitive' " git stuff
@@ -72,7 +69,6 @@ set splitright " put new window to the right when splitting vertically
 set t_vb= " disable screen flash
 set tabstop=4 " tab is 4 spaces
 set timeoutlen=500 " reduce lag for mapped sequences
-set ttymouse=xterm2 " better mouse handling
 set wildmenu " enhanced command-line completion
 set wildmode=list:longest,list:full " list all autocomplete matches and complete next full match
 
@@ -90,9 +86,8 @@ set nowrapscan " do not wrap around to beginning when searching
 
 " Colors
 set t_Co=256
-colorscheme gruvbox
-" colorscheme lucius
-" LuciusDarkLowContrast
+colorscheme lucius
+LuciusDarkLowContrast
 
 " Clipboard
 if has('clipboard')
@@ -123,8 +118,6 @@ autocmd FileType julia,python setlocal tabstop=4 " tab is 4 spaces
 let g:airline_extensions=['ale', 'branch', 'fzf', 'hunks', 'tabline']
 let g:airline#extensions#tabline#fnamemod=':t' " just show buffer filename
 let g:airline_powerline_fonts=1
-" let g:airline_left_sep=''
-" let g:airline_right_sep=''
 
 " ale
 let g:ale_echo_msg_error_str='E'
@@ -136,12 +129,9 @@ let g:ale_set_highlights=0 " don't highlight errors, just show in gutter
 let g:ale_sign_column_always=1 " don't want text to move when I start editing a file
 let g:ale_python_flake8_options='--max-line-length=99'
 let g:ale_linters={
-  \ 'javascript': ['eslint', 'prettier'],
   \ 'python': ['flake8'],
-  \ 'html': ['tidy'],
   \ }
 let g:ale_fixers={
-  \ 'javascript': ['eslint', 'prettier'],
   \ 'python': ['autopep8'],
   \ }
 
@@ -150,9 +140,6 @@ let python_highlight_all=1 " enable all Python syntax highlighting features
 
 " gitgutter
 let g:gitgutter_eager=0 " only run on save or when new buffer is loaded
-
-" gruvbox
-let g:gruvbox_contrast_dark='soft'
 
 " }}}
 
