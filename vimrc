@@ -13,18 +13,59 @@ endif
 call plug#begin('~/.vim/plugged')
 Plug 'JuliaEditorSupport/julia-vim' " julia syntax support
 Plug 'airblade/vim-gitgutter' " useful git info
-Plug 'hdima/python-syntax', { 'for': 'python' } " better Python syntax highlighting
+Plug 'benmills/vimux' " run commands in a tmux pane
 Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation behavior to comply with pep8
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy file finder
 Plug 'junegunn/fzf.vim' " handy mappings for fzf
+Plug 'morhetz/gruvbox' " excellent colorscheme
 Plug 'ransonr/vim-lucius' " fork of Jon's colorscheme
 Plug 'tmhedberg/SimpylFold', { 'for': 'python' } " better folding for Python
 Plug 'tpope/vim-commentary' " comment stuff out
 Plug 'tpope/vim-fugitive' " git stuff
 Plug 'vim-airline/vim-airline' " better statusline
 Plug 'vim-airline/vim-airline-themes' " you got this
+Plug 'vim-python/python-syntax', { 'for': 'python' } " better Python syntax highlighting
+Plug 'vim-test/vim-test' " make it easier to run tests
 Plug 'w0rp/ale' " async linter
 call plug#end()
+
+" }}}
+
+" Plugin Settings {{{
+
+" vim-airline
+let g:airline_extensions=['ale', 'branch', 'fzf', 'hunks', 'tabline']
+let g:airline#extensions#tabline#fnamemod=':t' " just show buffer filename
+let g:airline_powerline_fonts=1
+
+" ale
+let g:ale_echo_msg_error_str='E'
+let g:ale_echo_msg_warning_str='W'
+let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
+let g:ale_history_enabled=0 " don't keep history of commands
+let g:ale_lint_delay=500 " delay (ms) after text is changed for linters to run (default 200)
+let g:ale_set_highlights=0 " don't highlight errors, just show in gutter
+let g:ale_sign_column_always=1 " don't want text to move when I start editing a file
+let g:ale_python_flake8_options='--max-line-length=99'
+let g:ale_linters={
+  \ 'python': ['flake8'],
+  \ }
+let g:ale_fixers={
+  \ 'python': ['autopep8'],
+  \ }
+
+" python-syntax
+let python_highlight_all=1 " enable all Python syntax highlighting features
+
+" gitgutter
+let g:gitgutter_eager=0 " only run on save or when new buffer is loaded
+
+" vim-test
+let test#strategy='vimux' " run tests with vimux
+let test#python#runner='pytest'
+
+" gruvbox
+let g:gruvbox_contrast_dark='soft'
 
 " }}}
 
@@ -85,9 +126,11 @@ set incsearch " highlight search results as you type
 set nowrapscan " do not wrap around to beginning when searching
 
 " Colors
+
 set t_Co=256
-colorscheme lucius
-LuciusDarkLowContrast
+colorscheme gruvbox
+" colorscheme lucius
+" LuciusDarkLowContrast
 
 " Clipboard
 if has('clipboard')
@@ -109,37 +152,6 @@ autocmd FileType html,tex,markdown setlocal wrap
 
 autocmd FileType julia,python setlocal shiftwidth=4 " shift line by 4 spaces when using >> or <<
 autocmd FileType julia,python setlocal tabstop=4 " tab is 4 spaces
-
-" }}}
-
-" Plugin Settings {{{
-
-" vim-airline
-let g:airline_extensions=['ale', 'branch', 'fzf', 'hunks', 'tabline']
-let g:airline#extensions#tabline#fnamemod=':t' " just show buffer filename
-let g:airline_powerline_fonts=1
-
-" ale
-let g:ale_echo_msg_error_str='E'
-let g:ale_echo_msg_warning_str='W'
-let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
-let g:ale_history_enabled=0 " don't keep history of commands
-let g:ale_lint_delay=500 " delay (ms) after text is changed for linters to run (default 200)
-let g:ale_set_highlights=0 " don't highlight errors, just show in gutter
-let g:ale_sign_column_always=1 " don't want text to move when I start editing a file
-let g:ale_python_flake8_options='--max-line-length=99'
-let g:ale_linters={
-  \ 'python': ['flake8'],
-  \ }
-let g:ale_fixers={
-  \ 'python': ['autopep8'],
-  \ }
-
-" python-syntax
-let python_highlight_all=1 " enable all Python syntax highlighting features
-
-" gitgutter
-let g:gitgutter_eager=0 " only run on save or when new buffer is loaded
 
 " }}}
 
