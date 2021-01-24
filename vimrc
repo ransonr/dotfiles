@@ -67,6 +67,12 @@ let test#python#runner='pytest'
 " gruvbox
 let g:gruvbox_contrast_dark='soft'
 
+" netrw
+let g:netrw_liststyle=3 " tree style listing
+let g:netrw_winsize=20 " use 20% of the window
+let g:netrw_banner=0
+let g:netrw_browse_split=4 " open files in previous window
+
 " }}}
 
 " General Settings {{{
