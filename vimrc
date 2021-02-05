@@ -18,6 +18,9 @@ Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy file finder
 Plug 'junegunn/fzf.vim' " handy mappings for fzf
 Plug 'morhetz/gruvbox' " excellent colorscheme
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/vim-lsp'
 Plug 'ransonr/vim-lucius' " fork of Jon's colorscheme
 Plug 'tmhedberg/SimpylFold', { 'for': 'python' } " better folding for Python
 Plug 'tpope/vim-commentary' " comment stuff out
@@ -32,6 +35,57 @@ call plug#end()
 " }}}
 
 " Plugin Settings {{{
+if executable('pyls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'allowlist': ['python'],
+        \ 'workspace_config': {
+        \   'pyls': {
+        \     'plugins': {
+        \       'pydocstyle': {'enabled': v:true},
+        \       'pycodestyle': {'enabled': v:true},
+        \       'pyflakes': {'enabled': v:true},
+        \       'jedi': {'enabled': v:true},
+        \       'pylint': {'enabled': v:true}
+        \     }
+        \   }
+        \ }})
+endif
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gs <plug>(lsp-document-symbol-search)
+    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> gt <plug>(lsp-type-definition)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    " nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+    " nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+
+    " refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+" vim-lsp
+let g:lsp_fold_enabled=0 " use SimpylFold for folding
+let g:lsp_diagnostics_enabled=0 " use ale for warnings/errors instead
+let g:lsp_signature_help_enabled=0 " I couldn't get this to work properly -- was just opening an empty buffer
+" let g:lsp_log_verbose=1
+" let g:lsp_log_file=expand('~/vim-lsp.log')
+
+" asyncomplete
+let g:asyncomplete_auto_popup=0 " disable auto popup since we define a mapping to use tab for autocompletion
 
 " vim-airline
 let g:airline_extensions=['ale', 'branch', 'fzf', 'hunks', 'tabline']
@@ -51,7 +105,7 @@ let g:ale_linters={
   \ 'python': ['flake8'],
   \ }
 let g:ale_fixers={
-  \ 'python': ['autopep8'],
+  \ 'python': ['autopep8', 'isort'],
   \ }
 
 " python-syntax
@@ -202,5 +256,17 @@ nnoremap <silent> <leader>f :Ag<CR>
 map <F10> :echo "hi<" . synIDattr(synID(line("."), col("."),1), "name") . "> trans<"
       \ . synIDattr(synID(line("."), col("."),0), "name") . "> lo<"
       \ . synIDattr(synIDtrans(synID(line("."), col("."), 1)), "name") . ">"<CR>
+
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+" Use tab to trigger autocompletion
+inoremap <silent><expr> <TAB>
+  \ pumvisible() ? "\<C-n>" :
+  \ <SID>check_back_space() ? "\<TAB>" :
+  \ asyncomplete#force_refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 " }}}

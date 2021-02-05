@@ -1,0 +1,6 @@
+name: vimenv
+dependencies:
+- black
+- isort
+- jedi
+- python-language-server
