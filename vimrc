@@ -35,8 +35,10 @@ call plug#end()
 " }}}
 
 " Plugin Settings {{{
+
+" vim-lsp
 if executable('pyls')
-    au User lsp_setup call lsp#register_server({
+    autocmd User lsp_setup call lsp#register_server({
         \ 'name': 'pyls',
         \ 'cmd': {server_info->['pyls']},
         \ 'allowlist': ['python'],
@@ -58,29 +60,26 @@ function! s:on_lsp_buffer_enabled() abort
     setlocal signcolumn=yes
     if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
     nmap <buffer> gd <plug>(lsp-definition)
-    nmap <buffer> gs <plug>(lsp-document-symbol-search)
-    nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+    " nmap <buffer> gs <plug>(lsp-document-symbol-search)
+    " nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
     nmap <buffer> gr <plug>(lsp-references)
-    nmap <buffer> gi <plug>(lsp-implementation)
-    nmap <buffer> gt <plug>(lsp-type-definition)
+    " nmap <buffer> gi <plug>(lsp-implementation)
+    " nmap <buffer> gt <plug>(lsp-type-definition)
     nmap <buffer> <leader>rn <plug>(lsp-rename)
     " nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
     " nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
     nmap <buffer> K <plug>(lsp-hover)
-
-    " refer to doc to add more commands
 endfunction
 
 augroup lsp_install
-    au!
+    autocmd!
     " call s:on_lsp_buffer_enabled only for languages that has the server registered.
     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
 
-" vim-lsp
 let g:lsp_fold_enabled=0 " use SimpylFold for folding
 let g:lsp_diagnostics_enabled=0 " use ale for warnings/errors instead
-let g:lsp_signature_help_enabled=0 " I couldn't get this to work properly -- was just opening an empty buffer
+" let g:lsp_signature_help_enabled=0 " I couldn't get this to work properly -- was just opening an empty buffer
 " let g:lsp_log_verbose=1
 " let g:lsp_log_file=expand('~/vim-lsp.log')
 
@@ -102,7 +101,7 @@ let g:ale_set_highlights=0 " don't highlight errors, just show in gutter
 let g:ale_sign_column_always=1 " don't want text to move when I start editing a file
 let g:ale_python_flake8_options='--max-line-length=99'
 let g:ale_linters={
-  \ 'python': ['flake8'],
+  \ 'python': ['flake8', 'pydocstyle'],
   \ }
 let g:ale_fixers={
   \ 'python': ['autopep8', 'isort'],
@@ -139,7 +138,6 @@ syntax enable " enable syntax highlighting
 syntax sync fromstart " syntax highlight from start of file--slow but accurate
 
 set autoindent " copy indent from current line when creating new line
-set background=dark " easier on the eyes
 set backspace=start,indent,eol " backspace over everything in insert mode
 set colorcolumn=100 " display ruler at 100 lines
 set complete=.,w,b,u " scan current buffer, other windows, buffer list, unloaded buffers
@@ -159,7 +157,7 @@ set nowrap " don't wrap lines visually
 set number " show file line numbers
 set ruler " show current line and column positions in file
 set scrolloff=5 " min number of lines above and below cursor
-set shiftwidth=4 " shift line by 4 spaces when using >> or <<
+set shiftwidth=2 " shift line by 2 spaces when using >> or <<
 set showcmd " show what commands you are typing
 set showmatch " show matching open/close for bracket
 set showmode " show what mode you are in
@@ -168,7 +166,7 @@ set smartindent " C-like indenting when possible
 set splitbelow " put new window below current when splitting
 set splitright " put new window to the right when splitting vertically
 set t_vb= " disable screen flash
-set tabstop=4 " tab is 4 spaces
+set tabstop=2 " tab is 2 spaces
 set timeoutlen=500 " reduce lag for mapped sequences
 set wildmenu " enhanced command-line completion
 set wildmode=list:longest,list:full " list all autocomplete matches and complete next full match
@@ -186,7 +184,7 @@ set incsearch " highlight search results as you type
 set nowrapscan " do not wrap around to beginning when searching
 
 " Colors
-
+set background=dark " easier on the eyes
 set t_Co=256
 colorscheme gruvbox
 " colorscheme lucius
@@ -201,6 +199,7 @@ if has('clipboard')
   endif
 endif
 
+" gvim
 set guicursor=n-v-c:block-Cursor
 set guicursor+=a:blinkon0
 
@@ -208,10 +207,16 @@ set guicursor+=a:blinkon0
 
 " FileType Settings {{{
 
-autocmd FileType html,tex,markdown setlocal wrap
+augroup filetype_wrap
+  autocmd!
+  autocmd FileType html,tex,markdown setlocal wrap
+augroup END
 
-autocmd FileType julia,python setlocal shiftwidth=4 " shift line by 4 spaces when using >> or <<
-autocmd FileType julia,python setlocal tabstop=4 " tab is 4 spaces
+augroup filetype_python_or_julia
+  autocmd!
+  autocmd FileType julia,python setlocal shiftwidth=4 " shift line by 4 spaces when using >> or <<
+  autocmd FileType julia,python setlocal tabstop=4 " tab is 4 spaces
+augroup END
 
 " }}}
 
@@ -227,14 +232,14 @@ nnoremap <leader>h :bprevious<CR>
 nnoremap <silent> <leader>q :bw<CR>
 
 " Move around splits easily
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
+nnoremap <C-j> <C-w><C-j>
+nnoremap <C-k> <C-w><C-k>
+nnoremap <C-l> <C-w><C-l>
+nnoremap <C-h> <C-w><C-h>
 
 " Move between ale errors quickly
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
+nmap <silent> [g <Plug>(ale_previous_wrap)
+nmap <silent> ]g <Plug>(ale_next_wrap)
 
 " Easily open this file in a split
 nnoremap <leader>ev :split $MYVIMRC<CR>
