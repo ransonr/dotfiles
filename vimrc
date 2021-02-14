@@ -7,7 +7,7 @@
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
       \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 call plug#begin('~/.vim/plugged')
@@ -18,9 +18,9 @@ Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation 
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy file finder
 Plug 'junegunn/fzf.vim' " handy mappings for fzf
 Plug 'morhetz/gruvbox' " excellent colorscheme
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete-lsp.vim' " provides LSP autocompletion source for asyncomplete.vim
+Plug 'prabirshrestha/asyncomplete.vim' " async autocompletion
+Plug 'prabirshrestha/vim-lsp' " async LSP for vim8 and neovim
 Plug 'ransonr/vim-lucius' " fork of Jon's colorscheme
 Plug 'tmhedberg/SimpylFold', { 'for': 'python' } " better folding for Python
 Plug 'tpope/vim-commentary' " comment stuff out
@@ -29,7 +29,6 @@ Plug 'vim-airline/vim-airline' " better statusline
 Plug 'vim-airline/vim-airline-themes' " you got this
 Plug 'vim-python/python-syntax', { 'for': 'python' } " better Python syntax highlighting
 Plug 'vim-test/vim-test' " make it easier to run tests
-Plug 'w0rp/ale' " async linter
 call plug#end()
 
 " }}}
@@ -38,48 +37,53 @@ call plug#end()
 
 " vim-lsp
 if executable('pyls')
-    autocmd User lsp_setup call lsp#register_server({
-        \ 'name': 'pyls',
-        \ 'cmd': {server_info->['pyls']},
-        \ 'allowlist': ['python'],
-        \ 'workspace_config': {
-        \   'pyls': {
-        \     'plugins': {
-        \       'pydocstyle': {'enabled': v:true},
-        \       'pycodestyle': {'enabled': v:true},
-        \       'pyflakes': {'enabled': v:true},
-        \       'jedi': {'enabled': v:true},
-        \       'pylint': {'enabled': v:true}
-        \     }
-        \   }
-        \ }})
+  autocmd User lsp_setup call lsp#register_server({
+    \ 'name': 'pyls',
+    \ 'cmd': {server_info->['pyls']},
+    \ 'allowlist': ['python'],
+    \ 'workspace_config': {
+    \   'pyls': {
+    \     'plugins': {
+    \       'jedi': {'enabled': v:true},
+    \       'pycodestyle': {'enabled': v:true},
+    \       'pydocstyle': {'enabled': v:false},
+    \       'pyflakes': {'enabled': v:true},
+    \       'pylint': {'enabled': v:false},
+    \       'rope': {'enabled': v:false}
+    \     }
+    \   }
+    \ }})
 endif
 
 function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-    nmap <buffer> gd <plug>(lsp-definition)
-    " nmap <buffer> gs <plug>(lsp-document-symbol-search)
-    " nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
-    nmap <buffer> gr <plug>(lsp-references)
-    " nmap <buffer> gi <plug>(lsp-implementation)
-    " nmap <buffer> gt <plug>(lsp-type-definition)
-    nmap <buffer> <leader>rn <plug>(lsp-rename)
-    " nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
-    " nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
-    nmap <buffer> K <plug>(lsp-hover)
+  setlocal omnifunc=lsp#complete
+  setlocal signcolumn=yes
+  if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+  nmap <buffer> gd <plug>(lsp-definition)
+  nmap <buffer> gs <plug>(lsp-document-symbol-search)
+  nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+  nmap <buffer> gr <plug>(lsp-references)
+  nmap <buffer> gi <plug>(lsp-implementation)
+  nmap <buffer> gt <plug>(lsp-type-definition)
+  nmap <buffer> <leader>rn <plug>(lsp-rename)
+  nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+  nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+  nmap <buffer> K <plug>(lsp-hover)
 endfunction
 
 augroup lsp_install
-    autocmd!
-    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
+  autocmd!
+  " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+  autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup end
 
-let g:lsp_fold_enabled=0 " use SimpylFold for folding
-let g:lsp_diagnostics_enabled=0 " use ale for warnings/errors instead
-" let g:lsp_signature_help_enabled=0 " I couldn't get this to work properly -- was just opening an empty buffer
+let g:lsp_diagnostics_enabled=1 " enable reporting of linter errors/warnings
+let g:lsp_diagnostics_signs_enabled=1 " flag errors/warnings in the signs column
+let g:lsp_diagnostics_echo_cursor=1 " echo error for the current line to status
+let g:lsp_diagnostics_highlights_enabled=0 " disable highlighting of errors since they're flagged with signs
+let g:lsp_diagnostics_virtual_text_enabled=0 " don't show annoying virtual text next to errors
+let g:lsp_document_highlight_enabled=0 " don't highlight the symbol under the cursor
+let g:lsp_fold_enabled=0 " use SimpylFold for (python) folding
 " let g:lsp_log_verbose=1
 " let g:lsp_log_file=expand('~/vim-lsp.log')
 
@@ -87,25 +91,9 @@ let g:lsp_diagnostics_enabled=0 " use ale for warnings/errors instead
 let g:asyncomplete_auto_popup=0 " disable auto popup since we define a mapping to use tab for autocompletion
 
 " vim-airline
-let g:airline_extensions=['ale', 'branch', 'fzf', 'hunks', 'tabline']
+let g:airline_extensions=['branch', 'fzf', 'hunks', 'lsp', 'tabline']
 let g:airline#extensions#tabline#fnamemod=':t' " just show buffer filename
 let g:airline_powerline_fonts=1
-
-" ale
-let g:ale_echo_msg_error_str='E'
-let g:ale_echo_msg_warning_str='W'
-let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
-let g:ale_history_enabled=0 " don't keep history of commands
-let g:ale_lint_delay=500 " delay (ms) after text is changed for linters to run (default 200)
-let g:ale_set_highlights=0 " don't highlight errors, just show in gutter
-let g:ale_sign_column_always=1 " don't want text to move when I start editing a file
-let g:ale_python_flake8_options='--max-line-length=99'
-let g:ale_linters={
-  \ 'python': ['flake8', 'pydocstyle'],
-  \ }
-let g:ale_fixers={
-  \ 'python': ['autopep8', 'isort'],
-  \ }
 
 " python-syntax
 let python_highlight_all=1 " enable all Python syntax highlighting features
@@ -186,9 +174,9 @@ set nowrapscan " do not wrap around to beginning when searching
 " Colors
 set background=dark " easier on the eyes
 set t_Co=256
-colorscheme gruvbox
-" colorscheme lucius
-" LuciusDarkLowContrast
+" colorscheme gruvbox
+colorscheme lucius
+LuciusDarkLowContrast
 
 " Clipboard
 if has('clipboard')
@@ -237,10 +225,6 @@ nnoremap <C-k> <C-w><C-k>
 nnoremap <C-l> <C-w><C-l>
 nnoremap <C-h> <C-w><C-h>
 
-" Move between ale errors quickly
-nmap <silent> [g <Plug>(ale_previous_wrap)
-nmap <silent> ]g <Plug>(ale_next_wrap)
-
 " Easily open this file in a split
 nnoremap <leader>ev :split $MYVIMRC<CR>
 
@@ -257,14 +241,9 @@ nnoremap <leader>rtw :%s/\s\+$//e<CR>
 nnoremap <silent> <C-p> :GFiles<CR>
 nnoremap <silent> <leader>f :Ag<CR>
 
-" Show syntax items under cursor
-map <F10> :echo "hi<" . synIDattr(synID(line("."), col("."),1), "name") . "> trans<"
-      \ . synIDattr(synID(line("."), col("."),0), "name") . "> lo<"
-      \ . synIDattr(synIDtrans(synID(line("."), col("."), 1)), "name") . ">"<CR>
-
 function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
 
 " Use tab to trigger autocompletion
