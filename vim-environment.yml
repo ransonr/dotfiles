@@ -1,6 +1,8 @@
 name: vimenv
 dependencies:
-- black
-- isort
-- jedi
-- python-language-server
+  - black
+  - isort
+  - jedi
+  - python-language-server
+  - pip:
+    - pynvim
