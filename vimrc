@@ -191,6 +191,9 @@ endif
 set guicursor=n-v-c:block-Cursor
 set guicursor+=a:blinkon0
 
+let g:python3_host_prog=expand('~/miniconda3/envs/vimenv/bin/python3')
+let g:loaded_python_provider=0 " disable Python 2 support
+
 " }}}
 
 " FileType Settings {{{
@@ -252,5 +255,32 @@ inoremap <silent><expr> <TAB>
   \ <SID>check_back_space() ? "\<TAB>" :
   \ asyncomplete#force_refresh()
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+" Vimux
+" Open ipython in the current conda environment
+function! VimuxIPython()
+  call VimuxRunCommand("conda activate " . $CONDA_DEFAULT_ENV . "; ipython"))
+endfunction
+
+" Send the current python file to ipython
+function! VimuxSourcePython()
+  if &filetype ==# "python"
+    call VimuxRunCommand("%load " . expand("%:p"))
+  endif
+endfunction
+
+function! VimuxSendLine()
+  let l:command = getline(".")
+  call VimuxRunCommand(l:command)
+endfunction
+
+nnoremap <silent> <leader>vip :call VimuxIPython()<CR>
+nnoremap <silent> <leader>vsp :call VimuxSourcePython()<CR>
+nnoremap <C-c><C-c> :call VimuxSendLine()<CR>
+nnoremap <silent> <leader>vi :VimuxInspectRunner<CR>
+nnoremap <silent> <leader>vx :VimuxCloseRunner<CR>
+
+" exit terminal mode with Esc
+tnoremap <Esc> <C-\><C-n>
 
 " }}}
