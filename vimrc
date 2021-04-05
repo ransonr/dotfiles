@@ -11,108 +11,105 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
-Plug 'JuliaEditorSupport/julia-vim' " julia syntax support
-Plug 'airblade/vim-gitgutter' " useful git info
-Plug 'benmills/vimux' " run commands in a tmux pane
-Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation behavior to comply with pep8
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy file finder
-Plug 'junegunn/fzf.vim' " handy mappings for fzf
+
+" UI {{{
 Plug 'morhetz/gruvbox' " excellent colorscheme
-Plug 'prabirshrestha/asyncomplete-lsp.vim' " provides LSP autocompletion source for asyncomplete.vim
-Plug 'prabirshrestha/asyncomplete.vim' " async autocompletion
-Plug 'prabirshrestha/vim-lsp' " async LSP for vim8 and neovim
 Plug 'ransonr/vim-lucius' " fork of Jon's colorscheme
-Plug 'tmhedberg/SimpylFold', { 'for': 'python' } " better folding for Python
-Plug 'tpope/vim-commentary' " comment stuff out
-Plug 'tpope/vim-fugitive' " git stuff
 Plug 'vim-airline/vim-airline' " better statusline
 Plug 'vim-airline/vim-airline-themes' " you got this
+" }}}
+
+" Language-specific {{{
+Plug 'JuliaEditorSupport/julia-vim', { 'for': 'julia' } " julia syntax support
+Plug 'deoplete-plugins/deoplete-jedi', { 'for': 'python' } " jedi plugin for deoplete
+Plug 'hynek/vim-python-pep8-indent', { 'for': 'python' } " modifies indentation behavior to comply with pep8
+Plug 'tmhedberg/SimpylFold', { 'for': 'python' } " better folding for Python
 Plug 'vim-python/python-syntax', { 'for': 'python' } " better Python syntax highlighting
+" }}}
+
+" Git {{{
+Plug 'airblade/vim-gitgutter' " useful git info
+Plug 'tpope/vim-fugitive' " git stuff
+" }}}
+
+" LSP-like {{{
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+
+Plug 'w0rp/ale' " async linter
+" }}}
+
+" Utils {{{
+Plug 'benmills/vimux' " run commands in a tmux pane
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' } " fuzzy file finder
+Plug 'junegunn/fzf.vim' " handy mappings for fzf
+Plug 'tpope/vim-commentary' " comment stuff out
 Plug 'vim-test/vim-test' " make it easier to run tests
+" }}}
+
 call plug#end()
 
 " }}}
 
 " Plugin Settings {{{
 
-" vim-lsp
-if executable('pyls')
-  autocmd User lsp_setup call lsp#register_server({
-    \ 'name': 'pyls',
-    \ 'cmd': {server_info->['pyls']},
-    \ 'allowlist': ['python'],
-    \ 'workspace_config': {
-    \   'pyls': {
-    \     'plugins': {
-    \       'jedi': {'enabled': v:true},
-    \       'pycodestyle': {'enabled': v:true},
-    \       'pydocstyle': {'enabled': v:false},
-    \       'pyflakes': {'enabled': v:true},
-    \       'pylint': {'enabled': v:false},
-    \       'rope': {'enabled': v:false}
-    \     }
-    \   }
-    \ }})
-endif
+" deoplete {{{
+let g:deoplete#enable_at_startup = 1 " enable deoplete by default
+let g:deoplete#disable_auto_complete = 1 " use tab to trigger completion (see mappings)
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif " automatically close the method preview window
+" }}}
 
-function! s:on_lsp_buffer_enabled() abort
-  setlocal omnifunc=lsp#complete
-  setlocal signcolumn=yes
-  if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-  nmap <buffer> gd <plug>(lsp-definition)
-  nmap <buffer> gs <plug>(lsp-document-symbol-search)
-  nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
-  nmap <buffer> gr <plug>(lsp-references)
-  nmap <buffer> gi <plug>(lsp-implementation)
-  nmap <buffer> gt <plug>(lsp-type-definition)
-  nmap <buffer> <leader>rn <plug>(lsp-rename)
-  nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
-  nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
-  nmap <buffer> K <plug>(lsp-hover)
-endfunction
-
-augroup lsp_install
-  autocmd!
-  " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-  autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup end
-
-let g:lsp_diagnostics_enabled=1 " enable reporting of linter errors/warnings
-let g:lsp_diagnostics_signs_enabled=1 " flag errors/warnings in the signs column
-let g:lsp_diagnostics_echo_cursor=1 " echo error for the current line to status
-let g:lsp_diagnostics_highlights_enabled=0 " disable highlighting of errors since they're flagged with signs
-let g:lsp_diagnostics_virtual_text_enabled=0 " don't show annoying virtual text next to errors
-let g:lsp_document_highlight_enabled=0 " don't highlight the symbol under the cursor
-let g:lsp_fold_enabled=0 " use SimpylFold for (python) folding
-" let g:lsp_log_verbose=1
-" let g:lsp_log_file=expand('~/vim-lsp.log')
-
-" asyncomplete
-let g:asyncomplete_auto_popup=0 " disable auto popup since we define a mapping to use tab for autocompletion
-
-" vim-airline
-let g:airline_extensions=['branch', 'fzf', 'hunks', 'lsp', 'tabline']
+" vim-airline {{{
+let g:airline_extensions=['ale', 'branch', 'fzf', 'hunks', 'tabline']
 let g:airline#extensions#tabline#fnamemod=':t' " just show buffer filename
 let g:airline_powerline_fonts=1
+" }}}
 
-" python-syntax
+" ale {{{
+let g:ale_echo_msg_error_str='E'
+let g:ale_echo_msg_warning_str='W'
+let g:ale_echo_msg_format='[%linter%] %s [%severity%]'
+let g:ale_history_enabled=0 " don't keep history of commands
+let g:ale_lint_delay=500 " delay (ms) after text is changed for linters to run (default 200)
+let g:ale_set_highlights=0 " don't highlight errors, just show in gutter
+let g:ale_sign_column_always=1 " don't want text to move when I start editing a file
+let g:ale_python_flake8_options='--max-line-length=99'
+let g:ale_linters={
+  \ 'python': ['pyls', 'flake8'],
+  \ }
+let g:ale_fixers={
+  \ 'python': ['autopep8', 'isort'],
+  \ }
+" }}}
+
+" python-syntax {{{
 let python_highlight_all=1 " enable all Python syntax highlighting features
+" }}}
 
-" gitgutter
+" gitgutter {{{
 let g:gitgutter_eager=0 " only run on save or when new buffer is loaded
+" }}}
 
-" vim-test
+" vim-test {{{
 let test#strategy='vimux' " run tests with vimux
 let test#python#runner='pytest'
+" }}}
 
-" gruvbox
+" gruvbox {{{
 let g:gruvbox_contrast_dark='soft'
+" }}}
 
-" netrw
+" netrw {{{
 let g:netrw_liststyle=3 " tree style listing
 let g:netrw_winsize=20 " use 20% of the window
 let g:netrw_banner=0
 let g:netrw_browse_split=4 " open files in previous window
+" }}}
 
 " }}}
 
@@ -228,6 +225,9 @@ nnoremap <C-k> <C-w><C-k>
 nnoremap <C-l> <C-w><C-l>
 nnoremap <C-h> <C-w><C-h>
 
+" Easier toggling of folds
+nnoremap - za
+
 " Easily open this file in a split
 nnoremap <leader>ev :split $MYVIMRC<CR>
 
@@ -237,6 +237,14 @@ nnoremap <leader>sv :source $MYVIMRC<CR>
 " Easier than reaching for esc key
 inoremap jk <ESC>
 
+" Move between ale errors quickly
+nmap <silent> [g <Plug>(ale_previous_wrap)
+nmap <silent> ]g <Plug>(ale_next_wrap)
+
+" Ale go to definition and references
+nmap <silent> gd <Plug>(ale_go_to_definition_in_vsplit)
+nmap <silent> gr :ALEFindReferences -vsplit<CR>
+
 " Remove trailing whitespace
 nnoremap <leader>rtw :%s/\s\+$//e<CR>
 
@@ -244,6 +252,7 @@ nnoremap <leader>rtw :%s/\s\+$//e<CR>
 nnoremap <silent> <C-p> :GFiles<CR>
 nnoremap <silent> <leader>f :Ag<CR>
 
+" Utility function for tab completion
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~ '\s'
@@ -253,8 +262,8 @@ endfunction
 inoremap <silent><expr> <TAB>
   \ pumvisible() ? "\<C-n>" :
   \ <SID>check_back_space() ? "\<TAB>" :
-  \ asyncomplete#force_refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+  \ deoplete#manual_complete()
+inoremap <silent><expr><S-TAB> pumvisible() ? "\<C-p>" : "\<S-TAB>"
 
 " Vimux
 " Open ipython in the current conda environment
