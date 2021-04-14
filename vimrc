@@ -79,6 +79,19 @@ let g:ale_lint_delay=500 " delay (ms) after text is changed for linters to run (
 let g:ale_set_highlights=0 " don't highlight errors, just show in gutter
 let g:ale_sign_column_always=1 " don't want text to move when I start editing a file
 let g:ale_python_flake8_options='--max-line-length=99'
+" Disable pyls linting since we use flake8 for that still
+let g:ale_python_pyls_config={
+      \   'pyls': {
+      \     'plugins': {
+      \       'jedi': {'enabled': v:true},
+      \       'pycodestyle': {'enabled': v:false},
+      \       'pydocstyle': {'enabled': v:false},
+      \       'pyflakes': {'enabled': v:false},
+      \       'pylint': {'enabled': v:false},
+      \       'rope': {'enabled': v:false}
+      \     }
+      \   },
+      \ }
 let g:ale_linters={
   \ 'python': ['pyls', 'flake8'],
   \ }
