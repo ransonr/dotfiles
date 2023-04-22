@@ -7,87 +7,90 @@ local fn = vim.fn
 local g = vim.g
 local opt = vim.opt
 
--- Don't load these builtin plugins
-g.loaded_2html_plugin = 1
-g.loaded_netrw = 1
-g.loaded_netrwFileHandlers = 1
-g.loaded_netrwPlugin = 1
-g.loaded_netrwSettings = 1
-g.loaded_tar = 1
-g.loaded_tarPlugin = 1
-g.loaded_tutor_mode_plugin = 1
-g.loaded_vimball = 1
-g.loaded_vimballPlugin = 1
-
 --- }}}
 
 -- Plugins {{{
 
-local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-if fn.empty(fn.glob(install_path)) > 0 then
-  fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
 end
+vim.opt.rtp:prepend(lazypath)
 
-vim.api.nvim_exec([[
-  augroup Packer
-    autocmd!
-    autocmd BufWritePost init.lua PackerCompile
-  augroup end
-]], false)
+-- Must happen before plugins are required (otherwise wrong leader will be used)
+g.mapleader = " "
+g.maplocalleader = " "
 
-require('packer').startup(function(use)
-  use("wbthomason/packer.nvim")
-
-  use("nvim-lua/plenary.nvim")
-  use("tpope/vim-fugitive")
-  use("tpope/vim-commentary")
-  use("tpope/vim-projectionist")
-
-  use({
+require("lazy").setup({
+  {
     "EdenEast/nightfox.nvim",
+    lazy = false,
+    priority = 1000,
     config = function()
       require("nightfox").setup({
         options = {
           styles = {
             comments = "italic",
           },
+          groups = {
+            all = {
+              DevIconPy = { fg = "palette.blue" },
+            },
+          },
         },
       })
-    end,
-  })
 
-  use({
-    "kyazdani42/nvim-tree.lua",
-    requires = { "kyazdani42/nvim-web-devicons" },
-    config = function()
-      require("nvim-tree").setup({
-        filters = {
-          custom = { ".git$", "__pycache__", ".pytest_cache", "*.pyc" },
-        },
-        view = { hide_root_folders = true },
-        renderer = {
-          highlight_opened_files = "icon",
-          indent_markers = { enable = true },
-        },
-        git = { ignore = false },
-      })
+      cmd[[colorscheme nordfox]]
     end,
-  })
-
-  use({
+  },
+  "nvim-lua/plenary.nvim",
+  "tpope/vim-fugitive",
+  { "numToStr/Comment.nvim", config = true },
+  { "hynek/vim-python-pep8-indent", ft = "python" },
+  { "tmhedberg/SimpylFold", ft = "python" },
+  {
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      filters = {
+        custom = { ".git$", "__pycache__", ".pytest_cache", "*.pyc" },
+      },
+      view = { adaptive_size = true },
+      renderer = {
+        highlight_opened_files = "icon",
+        indent_markers = { enable = true },
+      },
+      git = { ignore = false },
+    },
+  },
+  {
     "lukas-reineke/indent-blankline.nvim",
-    config = function()
-      g.indent_blankline_filetype_exclude = {"help", "checkhealth", "packer", "man", "lspinfo", "NvimTree", ""}
-      require("indent_blankline").setup({})
-    end,
-  })
-
-  use({
+    config = true,
+  },
+  {
     "nvim-lualine/lualine.nvim",
     config = function()
+      local function diff_source()
+        local gitsigns = vim.b.gitsigns_status_dict
+        if gitsigns then
+          return {
+            added = gitsigns.added,
+            modified = gitsigns.changed,
+            removed = gitsigns.removed,
+          }
+        end
+      end
+
       require("lualine").setup({
         options = {
-          disabled_filetypes = {"help", "NvimTree"}
+          theme = "auto",
         },
         sections = {
           lualine_b = {
@@ -111,26 +114,22 @@ require('packer').startup(function(use)
         },
       })
     end,
-  })
-
-  use({
+  },
+  {
     "akinsho/bufferline.nvim",
-    config = function()
-      require("bufferline").setup({
-        options = {
-          offsets = {
-            {
-              filetype = "NvimTree",
-              text = "",
-              padding = 1,
-            },
+    opts = {
+      options = {
+        offsets = {
+          {
+            filetype = "NvimTree",
+            text = "",
+            padding = 1,
           },
         },
-      })
-    end,
-  })
-
-  use({
+      },
+    },
+  },
+  {
     "lewis6991/gitsigns.nvim",
     config = function()
       require("gitsigns").setup({
@@ -170,11 +169,10 @@ require('packer').startup(function(use)
         end
       })
     end,
-  })
-
-  use({
+  },
+  {
     "nvim-treesitter/nvim-treesitter",
-    run = ":TSUpdate",
+    build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup({
         ensure_installed = { "bash", "cpp", "lua", "python" },
@@ -185,57 +183,94 @@ require('packer').startup(function(use)
         }
       })
     end,
-  })
-
-  use({
+  },
+  {
     "nvim-treesitter/nvim-treesitter-context",
-    config = function()
-      require("treesitter-context").setup({
-        patterns = {
-          default = {
-            "class",
-            "function",
-            "method",
-          },
+    opts = {
+      patterns = {
+        default = {
+          "class",
+          "function",
+          "method",
         },
-      })
-    end,
-  })
-
-  use("neovim/nvim-lspconfig")
-  use("williamboman/nvim-lsp-installer")
-
-  use({
+      },
+    },
+  },
+  {
+    "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+    },
+  },
+  {
     "hrsh7th/nvim-cmp",
-    requires = {
+    dependencies = {
       "hrsh7th/cmp-nvim-lsp",
+      "hrsh7th/cmp-nvim-lsp-signature-help",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
     },
-  })
-
-  use({
+  },
+  {
     "folke/which-key.nvim",
-    config = function()
-      require("which-key").setup({})
-    end,
-  })
-
-  use({
+    config = true,
+    lazy = true,
+  },
+  {
+    "folke/todo-comments.nvim",
+    config = true,
+    lazy = true,
+  },
+  {
+    "folke/trouble.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = true,
+  },
+  {
     "ibhagwan/fzf-lua",
     requires = {
       {"junegunn/fzf", run = function() fn["fzf#install"]() end},
     },
-  })
-
-end)
+  },
+  {
+    "j-hui/fidget.nvim",
+    opts = {
+      window = {
+        blend = 0,
+      },
+    },
+  },
+}, {
+  performance = {
+    rtp = {
+      disabled_plugins = {
+        "netrw",
+        "netrwPlugin",
+        "netrwSettings",
+        "netrwFileHandlers",
+        "tar",
+        "tarPlugin",
+        "getscript",
+        "getscriptPlugin",
+        "vimball",
+        "vimballPlugin",
+        "2html_plugin",
+        "logipat",
+        "rrhelper",
+        "spellfile_plugin",
+        "matchit",
+      },
+    },
+  },
+})
 
 -- }}}
 
 -- General Settings {{{
 
 opt.background = "dark"  -- easier on the eyes
-opt.clipboard = "unnamed"  -- Set defaults registry to clipboard.
 opt.clipboard = "unnamedplus"
 opt.colorcolumn = {100}  -- display ruler at 100 characters
 opt.completeopt = "menu,menuone,noselect"
@@ -262,8 +297,6 @@ opt.termguicolors = true  -- enable rgb colors.
 opt.timeoutlen = 300  -- reduce lag for mapped sequences (default is 1000)
 opt.wrap = false  -- don't wrap lines visually
 opt.wrapscan = false  -- do not wrap to beginning when searching
-
-cmd("colorscheme nordfox")
 
 -- }}}
 
@@ -305,7 +338,8 @@ cmp.setup({
   },
   sources = cmp.config.sources({
     {name = "nvim_lsp"},
-    {name = "buffer"},
+    {name = "nvim_lsp_signature_help"},
+    {name = "buffer", keyword_length = 3},
     {name = "path"},
   })
 })
@@ -314,13 +348,12 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
   virtual_text = false,
 })
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require("cmp_nvim_lsp").update_capabilities(capabilities)
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 local on_attach = function(client, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-  local opts = {noremap = true, silent = true}
+  local opts = { noremap = true, silent = true }
 
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
@@ -342,21 +375,44 @@ local on_attach = function(client, bufnr)
 end
 
 local servers = {
-  "bashls",
-  "sumneko_lua",
-  "pylsp",
+  bashls = {},
+  pylsp = {
+    settings = {
+      pylsp = {
+        plugins = {
+          flake8 = { enabled = true },
+          mccabe = { enabled = false },
+          preload = { enabled = false },
+          pycodestyle = { enabled = false },
+          pydocstyle = { enabled = false },
+          pyflakes = { enabled = false },
+          pylint = { enabled = false },
+          rope_completion = { enabled = false },
+          yapf = { enabled = false },
+        },
+      },
+    },
+  },
 }
 
-require("nvim-lsp-installer").setup({
-  install_root_dir = os.getenv("HOME") .. "/.config/nvim/tooling/lsp_servers",
-  ensure_installed = servers
+local lsp_opts = {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  flags = {
+    debounce_text_changes = 150,
+  },
+}
+
+require("mason").setup({})
+require("mason-lspconfig").setup({
+  ensure_installed = vim.tbl_keys(servers)
 })
 
-for _, lsp in pairs(servers) do
-  require("lspconfig")[lsp].setup({
-    capabilities = capabilities,
-    on_attach = on_attach
-  })
+lspconfig = require("lspconfig")
+
+for server_name, _ in pairs(servers) do
+  local extended_opts = vim.tbl_deep_extend("force", lsp_opts, servers[server_name] or {})
+  lspconfig[server_name].setup(extended_opts)
 end
 
 -- }}}
@@ -365,8 +421,6 @@ end
 
 local keymap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
-
-g.mapleader = " "
 
 keymap("n", "<leader>R", ":NvimTreeToggle<CR>", opts)
 keymap("n", "<leader>r", ":NvimTreeFindFile<CR>", opts)
